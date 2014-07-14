@@ -209,6 +209,14 @@ describe Sauce::Config do
 
         it { should have_key :'iedriver-version' }
       end
+
+      context 'chromedriver-version' do
+        subject do
+          Sauce::Config.new('chromedriver-version' => '2.1').to_desired_capabilities
+        end
+
+        it { should have_key :'chromedriver-version' }
+      end
     end
 
     context 'with a :name set' do
