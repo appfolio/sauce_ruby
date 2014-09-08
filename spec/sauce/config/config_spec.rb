@@ -341,6 +341,41 @@ describe Sauce::Config do
       c.browser.should == 'BROWSER2'
       c.browser_version.should == 'BROWSER_VERSION2'
     end
+
+    it 'should not include device_name and device_orientation config parameters if none supplied' do
+      Sauce.config do |config|
+        config[:browsers] = [['OS1', 'BROWSER1', 'BROWSER_VERSION1']]
+      end
+
+      c.os.should == 'OS1'
+      c.browser.should == 'BROWSER1'
+      c.browser_version.should == 'BROWSER_VERSION1'
+      c.device_name.should == nil
+      c.device_orientation.should == nil
+
+      caps = c.to_desired_capabilities
+
+      caps.should_not have_key 'deviceName'
+      caps.should_not have_key 'device-orientation'
+    end
+
+    it 'should include device_name and device_orientation config parameters if supplied' do
+
+      Sauce.config do |config|
+        config[:browsers] = [['OS2', 'BROWSER2', 'BROWSER_VERSION2', 'DEVICE_NAME2', 'DEVICE_ORIENTATION2']]
+      end
+
+      c.os.should == 'OS2'
+      c.browser.should == 'BROWSER2'
+      c.browser_version.should == 'BROWSER_VERSION2'
+      c.device_name.should == 'DEVICE_NAME2'
+      c.device_orientation.should == 'DEVICE_ORIENTATION2'
+
+      caps = c.to_desired_capabilities
+
+      caps['deviceName'].should == 'DEVICE_NAME2'
+      caps['device-orientation'].should == 'DEVICE_ORIENTATION2'
+    end
   end
 
   describe "#"

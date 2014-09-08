@@ -178,6 +178,9 @@ module Sauce
         :client_version => client_version
       }
 
+      desired_capabilities['deviceName'] = device_name if device_name
+      desired_capabilities['device-orientation'] = device_orientation if device_orientation
+
       allowed_options = whitelisted_capabilities + SAUCE_OPTIONS
 
       allowed_options.each do |opt|
@@ -198,11 +201,11 @@ module Sauce
         # If a specific browser was requested, ignore :browsers and
         # use that one. This allows a setup with :browsers to launch
         # sub-processes pointed just at each browser in the list.
-        return [[os, browser, browser_version]]
+        return [[os, browser, browser_version, device_name, device_orientation]]
       end
 
       return @opts[:browsers] if @opts.include? :browsers
-      return [[os, browser, browser_version]]
+      return [[os, browser, browser_version, device_name, device_orientation]]
     end
 
     def browsers_for_location(file, linenumber=nil)
@@ -253,6 +256,28 @@ module Sauce
         @opts[:browsers][0][2]
       else
         @opts[:browser_version]
+      end
+    end
+
+    def device_name
+      if single_browser_set?
+        return @undefaulted_opts[:device_name]
+      end
+      if !ENV["TEST_ENV_NUMBER"] && @opts[:browsers]
+        @opts[:browsers][0][3]
+      else
+        @opts[:device_name]
+      end
+    end
+
+    def device_orientation
+      if single_browser_set?
+        return @undefaulted_opts[:device_orientation]
+      end
+      if !ENV["TEST_ENV_NUMBER"] && @opts[:browsers]
+        @opts[:browsers][0][4]
+      else
+        @opts[:device_orientation]
       end
     end
 

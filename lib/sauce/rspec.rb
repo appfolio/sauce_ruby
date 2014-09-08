@@ -184,13 +184,15 @@ begin
             description = the_test.metadata[:full_description]
             file = the_test.metadata[:file_path]
             exceptions = {}
-            config.browsers_for_location(file).each do |os, browser, version|
+            config.browsers_for_location(file).each do |os, browser, version, device_name, device_orientation|
               example = SeleniumExampleGroup.current_example.call(self)
               example.instance_variable_set(:@exception, nil)
               @selenium = Sauce::Selenium2.new({:os => os,
                                                 :browser => browser,
                                                 :browser_version => version,
-                                                :job_name => description})
+                                                :job_name => description,
+                                                :device_name => device_name,
+                                                :device_orientation => device_orientation})
               Sauce.driver_pool[Thread.current.object_id] = @selenium
               example.metadata[:sauce_public_link] = SauceWhisk.public_link(@selenium.session_id)
 
